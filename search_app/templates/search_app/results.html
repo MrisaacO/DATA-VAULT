@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Search — Personal Data Vault{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Search</h1>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="search" name="q" class="form-control" placeholder="Filename, tag or note text" value="{{ query }}">
+    </div>
+    <div class="col-md-3">
+        <select name="type" class="form-select">
+            <option value="">Any file type</option>
+            <option value="image" {% if file_type == "image" %}selected{% endif %}>Image</option>
+            <option value="video" {% if file_type == "video" %}selected{% endif %}>Video</option>
+            <option value="audio" {% if file_type == "audio" %}selected{% endif %}>Audio</option>
+            <option value="document" {% if file_type == "document" %}selected{% endif %}>Document</option>
+            <option value="spreadsheet" {% if file_type == "spreadsheet" %}selected{% endif %}>Spreadsheet</option>
+            <option value="presentation" {% if file_type == "presentation" %}selected{% endif %}>Presentation</option>
+            <option value="archive" {% if file_type == "archive" %}selected{% endif %}>Archive (zip)</option>
+            <option value="other" {% if file_type == "other" %}selected{% endif %}>Other</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="from" class="form-control" value="{{ date_from }}">
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="to" class="form-control" value="{{ date_to }}">
+    </div>
+    <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100">Go</button>
+    </div>
+</form>
+
+{% if has_search %}
+    <h2 class="h6 text-muted">Files ({{ files|length }})</h2>
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3 mb-4">
+        {% for file_obj in files %}
+            <div class="col">{% include "partials/_file_card.html" %}</div>
+        {% empty %}
+            <div class="col-12 text-muted">No matching files.</div>
+        {% endfor %}
+    </div>
+
+    <h2 class="h6 text-muted">Notes ({{ notes|length }})</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        {% for note in notes %}
+            <div class="col">{% include "partials/_note_card.html" %}</div>
+        {% empty %}
+            <div class="col-12 text-muted">No matching notes.</div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">Enter a search term, or choose a file type / date range, to get started.</p>
+{% endif %}
+{% endblock %}

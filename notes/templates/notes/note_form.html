@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == "edit" %}Edit note{% else %}New note{% endif %} — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h5 mb-3">{% if mode == "edit" %}Edit note{% else %}New note{% endif %}</h1>
+                {% if folder %}<p class="text-muted small">In folder: {{ folder.name }}</p>{% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        {{ form.title }}
+                        {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        {{ form.content }}
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ form.is_pinned }}
+                        <label class="form-check-label">Pin this note</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save note</button>
+                    <a class="btn btn-outline-secondary" href="{% if note %}{% url 'notes:detail' note.pk %}{% elif folder %}{% url 'folders:detail' folder.pk %}{% else %}{% url 'notes:list' %}{% endif %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

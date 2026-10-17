@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{% if action == "archive" %}Archive file{% else %}Restore from archive{% endif %} — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                {% if action == "archive" %}
+                    <h1 class="h5 mb-3">Archive "{{ file_obj.original_name }}"?</h1>
+                    <p class="text-muted">It stays in your vault and searchable, but is marked archived until restored.</p>
+                {% else %}
+                    <h1 class="h5 mb-3">Restore "{{ file_obj.original_name }}" from the archive?</h1>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'storage_app:detail' file_obj.pk %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

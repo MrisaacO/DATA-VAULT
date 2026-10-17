@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Create account — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-card card">
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <div class="brand-mark"><i class="bi bi-shield-lock-fill"></i></div>
+                <h2>One private place<br>for everything.</h2>
+                <p>Create your vault in seconds and start organizing files and notes exactly the way you want.</p>
+                <ul class="auth-visual-points">
+                    <li><i class="bi bi-check-circle-fill"></i> Nested folders &amp; drag-and-drop upload</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Favourites, tags &amp; quick search</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Full audit log of every action</li>
+                </ul>
+            </div>
+        </div>
+        <div class="auth-form-pane">
+            <div class="auth-brand">
+                <h1 class="h3 mb-1">Create your vault</h1>
+                <p class="text-muted mb-0">Start storing your personal files securely</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary w-100">Create account</button>
+                </form>
+                <p class="text-center mt-3 mb-0">
+                    Already have an account? <a href="{% url 'accounts:login' %}">Log in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

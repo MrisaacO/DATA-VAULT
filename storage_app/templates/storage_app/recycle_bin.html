@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Recycle Bin — Personal Data Vault{% endblock %}
+{% block content %}
+<h1 class="h4 mb-1"><i class="bi bi-trash"></i> Recycle Bin</h1>
+<p class="text-muted">Items here are kept for {{ retention_days }} days before they can be permanently removed. (Section 14.1 of the design guide.)</p>
+
+<h2 class="h6 text-muted mt-4">Folders</h2>
+<table class="table table-sm align-middle">
+    <tbody>
+    {% for folder in folders %}
+        <tr>
+            <td><i class="bi bi-folder-fill text-warning"></i> {{ folder.name }}</td>
+            <td class="text-muted small">Deleted {{ folder.deleted_at|naturaltime }}</td>
+            <td class="text-end">
+                <form method="post" action="{% url 'folders:restore' folder.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">Restore</button></form>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'folders:permanent_delete' folder.pk %}">Delete permanently</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td class="text-muted">No deleted folders.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2 class="h6 text-muted mt-4">Notes</h2>
+<table class="table table-sm align-middle">
+    <tbody>
+    {% for note in notes %}
+        <tr>
+            <td><i class="bi bi-journal-text"></i> {{ note.title }}</td>
+            <td class="text-muted small">Deleted {{ note.deleted_at|naturaltime }}</td>
+            <td class="text-end">
+                <form method="post" action="{% url 'notes:restore' note.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">Restore</button></form>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'notes:permanent_delete' note.pk %}">Delete permanently</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td class="text-muted">No deleted notes.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2 class="h6 text-muted mt-4">Files</h2>
+<table class="table table-sm align-middle">
+    <tbody>
+    {% for file_obj in files %}
+        <tr>
+            <td>{{ file_obj.original_name }}</td>
+            <td class="text-muted small">{{ file_obj.size_bytes|filesizeformat }} · Deleted {{ file_obj.deleted_at|naturaltime }}</td>
+            <td class="text-end">
+                <form method="post" action="{% url 'storage_app:restore' file_obj.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">Restore</button></form>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'storage_app:permanent_delete' file_obj.pk %}">Delete permanently</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td class="text-muted">No deleted files.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

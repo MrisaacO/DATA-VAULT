@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Notes — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Notes</h1>
+    <a class="btn btn-primary btn-sm" href="{% url 'notes:create' %}">New note</a>
+</div>
+<div class="row row-cols-1 row-cols-md-3 g-3">
+    {% for note in notes %}
+        <div class="col">{% include "partials/_note_card.html" %}</div>
+    {% empty %}
+        <div class="col-12 text-muted">No notes yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+# Version 1 requirements (local development):
+# Django + SQLite + local media/ folder, per the Development Guide's
+# "Best starting stack" (Section 26 / Appendix B).
+Django>=4.2,<5.1
+Pillow>=10.0        # image handling / dimension checks for preview & thumbnails
+python-decouple>=3.8  # reads settings from a .env file (see .env.example)

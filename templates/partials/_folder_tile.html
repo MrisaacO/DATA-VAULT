@@ -1,0 +1,9 @@
+{% load humanize %}
+<a href="{% url 'folders:detail' folder.pk %}" class="folder-tile">
+    <div class="card file-card">
+        <div class="card-body text-center">
+            <div class="file-icon text-warning"><i class="bi bi-folder-fill"></i></div>
+            <div class="mt-2 text-truncate" title="{{ folder.name }}">{{ folder.name }}</div>
+        </div>
+    </div>
+</a>

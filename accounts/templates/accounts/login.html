@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Log in — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-card card">
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <div class="brand-mark"><i class="bi bi-shield-lock-fill"></i></div>
+                <h2>Your data,<br>safely vaulted.</h2>
+                <p>Encrypted-at-rest storage, organized notes and instant search — all in one private place, only you can open.</p>
+                <ul class="auth-visual-points">
+                    <li><i class="bi bi-check-circle-fill"></i> Ownership-checked file access</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Recycle bin with 30-day restore</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Search across files, tags &amp; notes</li>
+                </ul>
+            </div>
+        </div>
+        <div class="auth-form-pane">
+            <div class="auth-brand">
+                <h1 class="h3 mb-1">Welcome back</h1>
+                <p class="text-muted mb-0">Log in to your Personal Data Vault</p>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger">Your username and password didn't match. Please try again.</div>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="id_username">Username</label>
+                        <input type="text" name="username" class="form-control" id="id_username" autofocus required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="id_password">Password</label>
+                        <input type="password" name="password" class="form-control" id="id_password" required>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <button type="submit" class="btn btn-primary w-100">Log in</button>
+                </form>
+                <p class="text-center mt-3 mb-0">
+                    <a href="{% url 'accounts:signup' %}">Create an account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

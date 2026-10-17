@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Favourites — Personal Data Vault{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3"><i class="bi bi-star-fill text-warning"></i> Favourites</h1>
+<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+    {% for file_obj in files %}
+        <div class="col">{% include "partials/_file_card.html" %}</div>
+    {% empty %}
+        <div class="col-12 text-muted">Nothing favourited yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

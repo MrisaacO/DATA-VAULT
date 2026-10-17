@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Upload — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h5 mb-3">Upload files{% if folder %} to "{{ folder.name }}"{% endif %}</h1>
+
+                <form id="upload-form" method="post" enctype="multipart/form-data"
+                      action="{% if folder %}{% url 'storage_app:upload_to_folder' folder.pk %}{% else %}{% url 'storage_app:upload' %}{% endif %}">
+                    {% csrf_token %}
+
+                    <div id="drop-zone" class="border border-2 border-dashed rounded p-5 text-center text-muted mb-3" style="cursor: pointer;">
+                        <i class="bi bi-cloud-arrow-up display-5"></i>
+                        <p class="mb-0 mt-2">Drag files here, or click to choose files</p>
+                    </div>
+                    <input type="file" id="id_files" name="files" multiple class="d-none">
+
+                    <ul id="selected-file-list" class="list-group mb-3"></ul>
+
+                    <div id="upload-progress-wrap" class="progress mb-3 d-none" style="height: 22px;">
+                        <div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%;">0%</div>
+                    </div>
+
+                    <p class="text-muted small">
+                        Max {{ max_upload_mb }}MB per file.
+                        Allowed types: {{ allowed_extensions }}.
+                    </p>
+
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <a class="btn btn-outline-secondary" href="{% if folder %}{% url 'folders:detail' folder.pk %}{% else %}{% url 'dashboard:home' %}{% endif %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/upload.js' %}"></script>
+{% endblock %}

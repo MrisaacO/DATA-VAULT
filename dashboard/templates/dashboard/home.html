@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard — Personal Data Vault{% endblock %}
+{% block content %}
+
+<div class="dashboard-page">
+    <div class="welcome-banner">
+        <div>
+            <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p>Your personal data, safely stored and always accessible.</p>
+        </div>
+        <div class="banner-quote">“A more organized<br>for a brighter tomorrow.”</div>
+    </div>
+
+    <div class="toolbar-row">
+        <a class="btn btn-primary action-btn" href="{% url 'storage_app:upload' %}"><i class="bi bi-cloud-upload"></i> Upload Files</a>
+        <a class="btn btn-light action-btn" href="{% url 'folders:create' %}"><i class="bi bi-plus-circle"></i> New Folder</a>
+        <a class="btn btn-light action-btn" href="{% url 'notes:create' %}"><i class="bi bi-journal-plus"></i> New Note</a>
+
+        <div class="toolbar-right ms-auto d-flex gap-2 align-items-center">
+            <button class="btn btn-light btn-icon" type="button" aria-label="Grid view"><i class="bi bi-grid-3x3-gap"></i></button>
+            <button class="btn btn-light btn-icon" type="button" aria-label="List view"><i class="bi bi-list-ul"></i></button>
+            <select class="form-select form-select-sm sort-select" aria-label="Sort files">
+                <option>Sort by: Name (A-Z)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2>My Files</h2>
+        <div class="breadcrumb-line">Home <span>›</span> My Files</div>
+    </div>
+
+    <div class="file-grid row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
+        {% for folder in folders %}
+            <div class="col">{% include "partials/_folder_tile.html" %}</div>
+        {% empty %}
+            <div class="col-12 text-muted">No folders yet. <a href="{% url 'folders:create' %}">Create your first folder</a>.</div>
+        {% endfor %}
+    </div>
+
+    {% if files %}
+    <div class="mt-4">
+        <h3 class="files-subtitle">Files</h3>
+        <div class="row row-cols-2 row-cols-md-4 row-cols-xl-5 g-3">
+            {% for file_obj in files %}
+                <div class="col">{% include "partials/_file_card.html" %}</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if notes %}
+    <div class="mt-4">
+        <h3 class="files-subtitle">Notes</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            {% for note in notes %}
+                <div class="col">{% include "partials/_note_card.html" %}</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if recent_files %}
+    <div class="mt-4">
+        <h3 class="files-subtitle">Recent Files</h3>
+        <div class="row row-cols-2 row-cols-md-4 row-cols-xl-5 g-3">
+            {% for file_obj in recent_files %}
+                <div class="col">{% include "partials/_file_card.html" %}</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

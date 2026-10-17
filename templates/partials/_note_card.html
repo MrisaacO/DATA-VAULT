@@ -1,0 +1,31 @@
+{% load humanize %}
+<div class="card note-card {% if note.is_pinned %}pinned{% endif %}">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <a href="{% url 'notes:detail' note.pk %}" class="text-decoration-none text-body">
+                <div class="fw-medium text-truncate" title="{{ note.title }}">
+                    <i class="bi bi-journal-text"></i> {{ note.title }}
+                    {% if note.is_favourite %}<i class="bi bi-star-fill text-warning small"></i>{% endif %}
+                </div>
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'notes:edit' note.pk %}">Edit</a></li>
+                    <li>
+                        <form method="post" action="{% url 'notes:toggle_favourite' note.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                {% if note.is_favourite %}Remove favourite{% else %}Add to favourites{% endif %}
+                            </button>
+                        </form>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'notes:delete' note.pk %}">Delete</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="text-muted small mb-0 mt-1">{{ note.content|truncatewords:20 }}</p>
+        <div class="text-muted small mt-1">Updated {{ note.updated_at|naturaltime }}</div>
+    </div>
+</div>

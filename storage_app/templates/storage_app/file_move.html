@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Move file — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h5 mb-3">Move "{{ file_obj.original_name }}"</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Destination</label>
+                        {{ form.destination }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Move</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'storage_app:detail' file_obj.pk %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Delete folder — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h5 mb-3">Move "{{ folder.name }}" to the recycle bin?</h1>
+                <p class="text-muted">Its files and notes stay linked to it and can be restored together within the retention period.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Move to recycle bin</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'folders:detail' folder.pk %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

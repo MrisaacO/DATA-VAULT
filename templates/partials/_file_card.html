@@ -1,0 +1,53 @@
+{% load humanize %}
+<div class="card file-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="file-icon
+                {% if file_obj.category == 'image' %}text-success{% elif file_obj.category == 'video' %}text-danger{% elif file_obj.category == 'audio' %}text-info{% elif file_obj.category == 'document' %}text-primary{% elif file_obj.category == 'spreadsheet' %}text-success{% elif file_obj.category == 'presentation' %}text-warning{% elif file_obj.category == 'archive' %}text-secondary{% else %}text-muted{% endif %}">
+                {% if file_obj.category == 'image' %}<i class="bi bi-file-image-fill"></i>
+                {% elif file_obj.category == 'video' %}<i class="bi bi-file-play-fill"></i>
+                {% elif file_obj.category == 'audio' %}<i class="bi bi-file-music-fill"></i>
+                {% elif file_obj.category == 'document' %}<i class="bi bi-file-earmark-text-fill"></i>
+                {% elif file_obj.category == 'spreadsheet' %}<i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                {% elif file_obj.category == 'presentation' %}<i class="bi bi-file-earmark-slides-fill"></i>
+                {% elif file_obj.category == 'archive' %}<i class="bi bi-file-earmark-zip-fill"></i>
+                {% else %}<i class="bi bi-file-earmark-fill"></i>{% endif %}
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    {% if file_obj.is_previewable %}
+                    <li><a class="dropdown-item" href="{% url 'storage_app:preview' file_obj.pk %}" target="_blank">Preview</a></li>
+                    {% endif %}
+                    <li><a class="dropdown-item" href="{% url 'storage_app:download' file_obj.pk %}">Download</a></li>
+                    <li>
+                        <form method="post" action="{% url 'storage_app:toggle_favourite' file_obj.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                {% if file_obj.is_favourite %}Remove favourite{% else %}Add to favourites{% endif %}
+                            </button>
+                        </form>
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'storage_app:rename' file_obj.pk %}">Rename</a></li>
+                    <li><a class="dropdown-item" href="{% url 'storage_app:move' file_obj.pk %}">Move</a></li>
+                    <li><a class="dropdown-item" href="{% url 'storage_app:tags' file_obj.pk %}">Edit tags</a></li>
+                    {% if file_obj.storage_tier == 'active' %}
+                    <li><a class="dropdown-item" href="{% url 'archive_app:archive_file' file_obj.pk %}">Archive</a></li>
+                    {% else %}
+                    <li><a class="dropdown-item" href="{% url 'archive_app:unarchive_file' file_obj.pk %}">Restore from archive</a></li>
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'storage_app:delete' file_obj.pk %}">Delete</a></li>
+                </ul>
+            </div>
+        </div>
+        <a href="{% url 'storage_app:detail' file_obj.pk %}" class="text-decoration-none text-body">
+            <div class="mt-2 text-truncate fw-medium" title="{{ file_obj.original_name }}">
+                {{ file_obj.original_name }}
+                {% if file_obj.is_favourite %}<i class="bi bi-star-fill text-warning small"></i>{% endif %}
+                {% if file_obj.storage_tier == 'archived' %}<span class="badge bg-secondary">Archived</span>{% endif %}
+            </div>
+        </a>
+        <div class="text-muted small">{{ file_obj.size_bytes|filesizeformat }} · {{ file_obj.created_at|naturalday }}</div>
+    </div>
+</div>

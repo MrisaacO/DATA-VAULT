@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}{% if folder %}{{ folder.name }}{% else %}My Files{% endif %} — Personal Data Vault{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-vault">
+        <li class="breadcrumb-item{% if not folder %} active{% endif %}">
+            {% if folder %}<a href="{% url 'folders:root' %}">My Files</a>{% else %}My Files{% endif %}
+        </li>
+        {% for ancestor in breadcrumbs %}
+            {% if forloop.last %}
+                <li class="breadcrumb-item active">{{ ancestor.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item"><a href="{% url 'folders:detail' ancestor.pk %}">{{ ancestor.name }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">
+        {% if folder %}<i class="bi bi-folder-fill text-warning"></i> {{ folder.name }}{% else %}<i class="bi bi-folder2-open"></i> My Files{% endif %}
+    </h1>
+    <div class="btn-group">
+        {% if folder %}
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'storage_app:upload_to_folder' folder.pk %}">Upload here</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'folders:create_child' folder.pk %}">New subfolder</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'notes:create_in_folder' folder.pk %}">New note</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'folders:rename' folder.pk %}">Rename</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'folders:move' folder.pk %}">Move</a>
+        <a class="btn btn-outline-danger btn-sm" href="{% url 'folders:delete' folder.pk %}">Delete</a>
+        {% else %}
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'storage_app:upload' %}">Upload</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'folders:create' %}">New folder</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'notes:create' %}">New note</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mb-3">
+    <div class="btn-group btn-group-sm" role="group" aria-label="View mode">
+        <button type="button" class="btn btn-outline-secondary view-toggle active" data-view="grid" aria-label="Grid view"><i class="bi bi-grid-3x3-gap"></i></button>
+        <button type="button" class="btn btn-outline-secondary view-toggle" data-view="list" aria-label="List view"><i class="bi bi-list-ul"></i></button>
+    </div>
+</div>
+
+{% if subfolders %}
+<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3 mb-4 my-files-grid">
+    {% for subfolder in subfolders %}
+        <div class="col">{% with folder=subfolder %}{% include "partials/_folder_tile.html" %}{% endwith %}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="h6 text-muted mb-0">Files ({{ files|length }})</h2>
+    <div class="btn-group btn-group-sm">
+        <a class="btn btn-outline-secondary {% if current_sort == 'name' %}active{% endif %}" href="?sort=name">Name</a>
+        <a class="btn btn-outline-secondary {% if current_sort == '-date' %}active{% endif %}" href="?sort=-date">Newest</a>
+        <a class="btn btn-outline-secondary {% if current_sort == '-size' %}active{% endif %}" href="?sort=-size">Largest</a>
+    </div>
+</div>
+<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3 mb-4 my-files-grid">
+    {% for file_obj in files %}
+        <div class="col">{% include "partials/_file_card.html" %}</div>
+    {% empty %}
+        <div class="col-12 text-muted">
+            {% if folder %}This folder has no files yet.{% else %}No files yet. <a href="{% url 'storage_app:upload' %}">Upload your first file</a>.{% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% if notes %}
+<h2 class="h6 text-muted">Notes</h2>
+<div class="row row-cols-1 row-cols-md-3 g-3">
+    {% for note in notes %}
+        <div class="col">{% include "partials/_note_card.html" %}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".view-toggle");
+    const grids = document.querySelectorAll(".my-files-grid");
+    const STORAGE_KEY = "vault-my-files-view";
+
+    function applyView(view) {
+        grids.forEach(function (grid) {
+            grid.classList.toggle("list-view", view === "list");
+        });
+        buttons.forEach(function (btn) {
+            btn.classList.toggle("active", btn.dataset.view === view);
+        });
+    }
+
+    buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const view = btn.dataset.view;
+            try { localStorage.setItem(STORAGE_KEY, view); } catch (e) {}
+            applyView(view);
+        });
+    });
+
+    let savedView = "grid";
+    try { savedView = localStorage.getItem(STORAGE_KEY) || "grid"; } catch (e) {}
+    applyView(savedView);
+});
+</script>
+{% endblock %}

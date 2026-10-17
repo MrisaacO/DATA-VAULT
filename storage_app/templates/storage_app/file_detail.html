@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ file_obj.original_name }} — Personal Data Vault{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h5 mb-0 text-truncate">{{ file_obj.original_name }}</h1>
+            <div class="btn-group btn-group-sm">
+                <a class="btn btn-outline-primary" href="{% url 'storage_app:download' file_obj.pk %}">Download</a>
+                <a class="btn btn-outline-secondary" href="{% url 'storage_app:rename' file_obj.pk %}">Rename</a>
+                <a class="btn btn-outline-secondary" href="{% url 'storage_app:move' file_obj.pk %}">Move</a>
+                <a class="btn btn-outline-secondary" href="{% url 'storage_app:tags' file_obj.pk %}">Tags</a>
+                <a class="btn btn-outline-danger" href="{% url 'storage_app:delete' file_obj.pk %}">Delete</a>
+            </div>
+        </div>
+
+        {% if file_obj.category == "image" %}
+            <img src="{% url 'storage_app:preview' file_obj.pk %}" class="img-fluid rounded border mb-3" alt="{{ file_obj.original_name }}">
+        {% elif file_obj.category == "audio" %}
+            <audio controls class="w-100 mb-3"><source src="{% url 'storage_app:preview' file_obj.pk %}" type="{{ file_obj.mime_type }}"></audio>
+        {% elif file_obj.category == "video" %}
+            <video controls class="w-100 rounded border mb-3"><source src="{% url 'storage_app:preview' file_obj.pk %}" type="{{ file_obj.mime_type }}"></video>
+        {% elif file_obj.mime_type == "application/pdf" %}
+            <iframe src="{% url 'storage_app:preview' file_obj.pk %}" class="w-100 border rounded mb-3" style="height: 70vh;"></iframe>
+        {% else %}
+            <div class="alert alert-secondary">No inline preview for this file type. Use Download to open it.</div>
+        {% endif %}
+
+        <table class="table table-sm">
+            <tr><th>Folder</th><td>{% if file_obj.folder %}<a href="{% url 'folders:detail' file_obj.folder.pk %}">{{ file_obj.folder.name }}</a>{% else %}My Storage{% endif %}</td></tr>
+            <tr><th>Type</th><td>{{ file_obj.mime_type }}</td></tr>
+            <tr><th>Size</th><td>{{ file_obj.size_bytes|filesizeformat }}</td></tr>
+            <tr><th>Uploaded</th><td>{{ file_obj.created_at|date:"N j, Y, g:i a" }}</td></tr>
+            <tr><th>Tags</th><td>{% for tag in file_obj.tag_list %}<span class="badge bg-light text-dark border me-1">{{ tag }}</span>{% empty %}<span class="text-muted">None</span>{% endfor %}</td></tr>
+            <tr><th>Checksum (SHA-256)</th><td><code class="small">{{ file_obj.checksum }}</code></td></tr>
+            <tr><th>Storage tier</th><td>{{ file_obj.get_storage_tier_display }}</td></tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

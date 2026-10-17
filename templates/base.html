@@ -1,0 +1,105 @@
+{% load humanize static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Personal Data Vault{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body class="vault-body">
+<div class="vault-shell">
+    {% if user.is_authenticated %}
+    <aside class="vault-sidebar">
+        <div class="brand-wrap">
+            <div class="brand-mark"><i class="bi bi-shield-lock-fill"></i></div>
+            <div class="brand-copy">
+                <div class="brand-name">Personal Data Vault</div>
+                <div class="brand-tag">Your Data. Secure. Always With You.</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="nav-item {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard:home' %}"><span class="nav-icon"><i class="bi bi-house-door-fill"></i></span><span>Dashboard</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'folders' %}active{% endif %}" href="{% url 'folders:root' %}"><span class="nav-icon"><i class="bi bi-folder2-open"></i></span><span>My Files</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'search_app' and request.GET.type == 'image' %}active{% endif %}" href="{% url 'search_app:search' %}?type=image"><span class="nav-icon"><i class="bi bi-image"></i></span><span>Images</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'search_app' and request.GET.type == 'video' %}active{% endif %}" href="{% url 'search_app:search' %}?type=video"><span class="nav-icon"><i class="bi bi-play-circle"></i></span><span>Videos</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'search_app' and request.GET.type == 'audio' %}active{% endif %}" href="{% url 'search_app:search' %}?type=audio"><span class="nav-icon"><i class="bi bi-music-note-beamed"></i></span><span>Audio</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'search_app' and request.GET.type == 'document' %}active{% endif %}" href="{% url 'search_app:search' %}?type=document"><span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span><span>Documents</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'notes' %}active{% endif %}" href="{% url 'notes:list' %}"><span class="nav-icon"><i class="bi bi-journal-text"></i></span><span>Notes</span></a>
+            <a class="nav-item {% if request.resolver_match.url_name == 'favourites' %}active{% endif %}" href="{% url 'storage_app:favourites' %}"><span class="nav-icon"><i class="bi bi-star"></i></span><span>Favourites</span></a>
+            <a class="nav-item {% if request.resolver_match.url_name == 'recycle_bin' %}active{% endif %}" href="{% url 'storage_app:recycle_bin' %}"><span class="nav-icon"><i class="bi bi-trash"></i></span><span>Recycle Bin</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'archive_app' %}active{% endif %}" href="{% url 'archive_app:archive_list' %}"><span class="nav-icon"><i class="bi bi-archive"></i></span><span>Archive</span></a>
+            <a class="nav-item {% if request.resolver_match.app_name == 'accounts' %}active{% endif %}" href="{% url 'accounts:profile' %}"><span class="nav-icon"><i class="bi bi-gear"></i></span><span>Settings</span></a>
+        </nav>
+
+        <div class="storage-box">
+            <div class="storage-label">Storage Usage</div>
+            {% if storage_summary %}
+                <div class="storage-total">{{ storage_summary.used_bytes|filesizeformat }} of {{ storage_summary.quota_bytes|filesizeformat }} used</div>
+                <div class="storage-bar">
+                    <span style="width: {{ storage_summary.percent_used }}%"></span>
+                </div>
+                <div class="storage-percent">{{ storage_summary.percent_used }}%</div>
+            {% else %}
+                <div class="storage-total">0 bytes of 128 GB used</div>
+                <div class="storage-bar"><span style="width: 0%"></span></div>
+                <div class="storage-percent">0%</div>
+            {% endif %}
+        </div>
+    </aside>
+    {% endif %}
+
+    <div class="vault-main">
+        {% if user.is_authenticated %}
+        <header class="vault-topbar">
+            <form class="top-search" method="get" action="{% url 'search_app:search' %}">
+                <i class="bi bi-search"></i>
+                <input type="search" name="q" placeholder="Search files, notes, tags..." value="{{ request.GET.q }}">
+            </form>
+
+            <div class="top-actions">
+                <button class="icon-button" type="button" aria-label="Notifications">
+                    <i class="bi bi-bell"></i>
+                </button>
+                <div class="user-pill dropdown">
+                    <button class="btn btn-link dropdown-toggle d-flex align-items-center gap-2 text-decoration-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="user-avatar">JD</span>
+                        <span class="user-name">{{ user.username|default:"John Doe" }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button class="dropdown-item" type="submit">Log out</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        {% endif %}
+
+<main class="{% if user.is_authenticated %}content-area{% else %}container-fluid px-4 py-4{% endif %}">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
